@@ -1,0 +1,42 @@
+sudo: required
+
+env:
+  DOCKER_COMPOSE_VERSION: 1.25.4
+  SECRET_KEY: 'secret_key'
+  VERSION: 'v1'
+  POSTGRES_USER: 'docker_user'
+  POSTGRES_PASSWORD: 'docker_password'
+  GIT_REPO: https://github.com/rvlz/auth.rvlz.io.git
+  IMG_REGISTRY: ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
+  API_GIT_REPO: ${GIT_REPO}#${TRAVIS_BRANCH}:services/api
+  API_IMG_REPO: auth-rvlz-io-api
+  DB_GIT_REPO: ${GIT_REPO}#${TRAVIS_BRANCH}:services/api/dev.db
+  DB_IMG_REPO: auth-rvlz-io-db
+  SWAGGER_GIT_REPO: ${GIT_REPO}#${TRAVIS_BRANCH}:services/swagger
+  SWAGGER_IMG_REPO: auth-rvlz-io-swagger
+
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+script:
+  - bash scripts/test.sh
+
+after_success:
+  - bash scripts/docker-push.sh
+  # - bash scripts/deploy-stage.sh
+  # - bash scripts/deploy-prod.sh
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+
+branches:
+  only:
+    - develop
+    - staging
+    - production

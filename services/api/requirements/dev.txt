@@ -1,0 +1,12 @@
+flask
+pytest
+pytest-mock
+freezegun
+factory_boy
+flake8
+flask-sqlalchemy
+psycopg2-binary
+flask-migrate
+flask-bcrypt
+marshmallow
+flask-jwt-extended

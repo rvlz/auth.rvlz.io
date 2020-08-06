@@ -1,0 +1,59 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "%s.dkr.ecr.us-east-1.amazonaws.com/auth-rvlz-io-api:production",
+      "essential": true,
+      "memoryReservation": 300,
+      "portMappings": [
+        {
+          "hostPort": 0,
+          "protocol": "tcp",
+          "containerPort": 5000
+        }
+      ],
+      "environment": [
+        {
+          "name": "FLASK_ENV",
+          "value": "production"
+        },
+        {
+          "name": "VERSION",
+          "value": "v1"
+        },
+        {
+          "name": "APP_CONFIG",
+          "value": "app.main.config.ProductionConfig"
+        },
+        {
+          "name": "SECRET_KEY",
+          "value": "%s"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "%s"
+        },
+        {
+          "name": "DATABASE_TEST_URL",
+          "value": "postgres://postgres:postgres@db:5432/api_test"
+        },
+        {
+          "name": "ACCESS_TOKEN_EXPIRES",
+          "value": "5"
+        },
+        {
+          "name": "REFRESH_TOKEN_EXPIRES",
+          "value": "60"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "api-prod",
+          "awslogs-region": "us-east-1"
+        }
+      }
+    }
+  ],
+  "family": "api-prod-td"
+}

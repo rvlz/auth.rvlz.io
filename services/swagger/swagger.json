@@ -1,0 +1,500 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "1.0.0",
+    "description": "Swagger spec for documenting Authentication API.",
+    "title": "Auth RESTful API",
+    "contact": {
+      "email": "ricardo@rvlz.io"
+    }
+  },
+  "tags": [
+    {
+      "name": "User",
+      "description": "Application users"
+    },
+    {
+      "name": "Authentication",
+      "description": "Bearer-based authentication"
+    },
+    {
+      "name": "Operator",
+      "description": "Access limited to operator users"
+    }
+  ],
+  "paths": {
+    "/auth/token": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticate user",
+        "requestBody": {
+          "description": "Upon successful authentication issue access and refresh JWT",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/UserAuth"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "Access JWT"
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "description": "Refresh JWT"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh access token",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "Access JWT"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create user",
+        "requestBody": {
+          "description": "Details of new user",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/UserCreation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/UserDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["User", "Operator"],
+        "summary": "Get user by id",
+        "parameters":[
+          {
+            "in": "path",
+            "name": "id",
+            "description": "User identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/UserDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["User", "Operator"],
+        "summary": "Delete user by id",
+        "parameters":[
+          {
+            "in": "path",
+            "name": "id",
+            "description": "User identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["User", "Operator"],
+        "summary": "Update user by id",
+        "parameters":[
+          {
+            "in": "path",
+            "name": "id",
+            "description": "User identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User updates",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/UserDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/self": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get current user details",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/UserDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete current user",
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["User"],
+        "summary": "Update current user",
+        "requestBody": {
+          "description": "User updates",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/UserDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Failed authentication"
+          },
+          "403": {
+            "description": "Operation not permitted"
+          },
+          "404": {
+            "description": "Resource not found"
+          },
+          "422": {
+            "description": "Failed validation"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "UserAuth": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        }
+      }
+    },
+    "UserCreation": {
+      "type": "object",
+      "required": [
+        "username",
+        "email",
+        "password"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 30
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "minLength": 8,
+          "maxLength": 15
+        }
+      }
+    },
+    "UserUpdate": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 30
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "minLength": 8,
+          "maxLength": 15
+        }
+      }
+    },
+    "UserDetails": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "operator"]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost/api/v1"
+    }
+  ]
+}
